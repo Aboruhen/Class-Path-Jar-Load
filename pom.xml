@@ -10,11 +10,41 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>uber-jar</module>
+        <module>uber-module</module>
         <module>base-check</module>
     </modules>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <target name="copy jars into one directory">
+                                    <copy todir="../target/project_jars">
+                                        <fileset dir="${project.build.directory}">
+                                            <include name="*.jar"/>
+                                            <exclude name="**/*original*"/>
+                                        </fileset>
+                                        <fileset dir="${project.build.directory}/libs">
+                                            <include name="*.jar"/>
+                                        </fileset>
+                                    </copy>
+                                </target>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -25,6 +55,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
+                            <includeGroupIds>com.google.guava</includeGroupIds>
                             <outputDirectory>${project.build.directory}/libs</outputDirectory>
                         </configuration>
                     </execution>
@@ -42,6 +73,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
